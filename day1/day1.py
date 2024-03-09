@@ -1,6 +1,9 @@
 """Script for solution for day 1"""
 
 
+from typing import List
+
+
 def largest_elf(filename: str) -> int:
     """ 
     Reads input file in format specified at https://adventofcode.com/2022/day/1 and 
@@ -25,7 +28,7 @@ def largest_three_elves(filename: str) -> int:
     """
     total: int = 0
     with open(filename, encoding="utf-8") as elves:
-        max_elves: [int] = []
+        max_elves: List[int] = []
         cur: int = 0
         for line in elves:
             if line == '\n':
