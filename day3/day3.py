@@ -13,10 +13,6 @@ def priority(char: str) -> int:
         return ord(char) - ord('A') + 27
     else:
         raise ValueError()
-    
-def get_misplaced_item_priority(rucksack: str) -> int:
-
-    return 0
 
 def part1(filename: str) -> int:
     """
