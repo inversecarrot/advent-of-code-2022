@@ -29,17 +29,15 @@ class FileTree:
         self.root = DirectoryNode(NodeType.DIR, '/', None, [])
         next_command = commands.readline()
         cur = None
-        while next_command != '\n':
+        while next_command:
             tokens = next_command.strip('\n').split(' ')
-            print(tokens)
             if tokens[0] == '$':
                 if tokens[1] == 'ls':
                     files = []
                     next_command = commands.readline()
-                    while not next_command.startswith('$') and not next_command == '\n':
+                    while not next_command.startswith('$') and next_command:
                         files.append(next_command)
                         next_command = commands.readline()
-                    print(files)
                     nodes = []
                     for file in files:
                         file_tokens = file.strip('\n').split(' ')
@@ -52,4 +50,49 @@ class FileTree:
                     if tokens[2] == '/':
                         cur = self.root
                         next_command = commands.readline()
-        print(cur)
+                    elif tokens[2] == '..':
+                        cur = cur.parent
+                        next_command = commands.readline()
+                    else:
+                        # directory name
+                        next_node = next((node for node in cur.children if node.name == tokens[2]))
+                        cur = next_node
+                        next_command = commands.readline()
+        # self.print_tree()
+
+    def get_sum_of_large_directories(self):
+        return self._get_sum_of_large_directories(self.root)[1]
+
+    def _get_sum_of_large_directories(self, cur: Node):
+        if cur.type == NodeType.FILE:
+            return (int(cur.size), 0)
+        else:
+            child_sizes = [self._get_sum_of_large_directories(node) for node in cur.children]
+            size = 0
+            sum = 0
+            for (child_size, child_sum) in child_sizes:
+                size += child_size
+                sum += child_sum
+            if size <= 100000:
+                sum += size
+            return (size, sum)
+
+
+    def print_tree(self):
+        self._print_node(self.root, 0)
+
+    def _print_node(self, node: Node, depth: int):
+        node_string = ''
+        for _ in range(0, depth):
+            node_string += '    '
+        node_string += f'- {node.name} ({node.type}'
+        if node.type == NodeType.FILE:
+            node_string += f', size={node.size})'
+            print(node_string)
+        else:
+            print(node_string + ')')
+            for child in node.children:
+                self._print_node(child, depth + 1)
+
+        
+        
