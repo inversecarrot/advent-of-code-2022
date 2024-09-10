@@ -3,7 +3,7 @@ from filetree import FileTree
 def get_size(filename: str) -> str:
     with open(filename, encoding='utf-8') as commands:
         tree = FileTree(commands)
-    return ''
+    return tree.get_sum_of_large_directories()
 
 def part1(filename: str) -> str:
     return get_size(filename)
