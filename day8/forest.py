@@ -14,10 +14,12 @@ class Forest:
     trees: List[List[int]]
     columns: int
     rows: int
+    visibility: List[List[bool]]
     def __init__(self, input: TextIOWrapper):
         self.trees = self._parse_input(input)
         self.columns = len(self.trees[0])
         self.rows = len(self.trees)
+        self.visibility = [[False for x in range(0, self.columns)] for y in range(0, self.rows)]
         
 
     def _parse_input(self, input: TextIOWrapper):
@@ -29,17 +31,43 @@ class Forest:
         return trees
     
     def calculate_cover(self) -> int:
-        visibility = [[False for x in range(0, self.columns)] for y in range(0, self.rows)]
         max_heights = [-1 for x in range(0, self.columns)]
+
         # start down
         for row in range(0, self.rows):
             for col in range(0, self.columns):
                 if self.trees[row][col] > max_heights[col]:
-                    visibility[row][col] = True
+                    self.visibility[row][col] = True
                     max_heights[col] = self.trees[row][col]
-        print(visibility)
-        return 0
+        # go up
+        max_heights = [-1 for x in range(0, self.columns)]
+        for row in reversed(range(0, self.rows)):
+            for col in range(0, self.columns):
+                if self.trees[row][col] > max_heights[col]:
+                    self.visibility[row][col] = True
+                    max_heights[col] = self.trees[row][col]
+        # go left
+        max_heights = [-1 for x in range(0, self.rows)]
+        for col in range(0, self.columns):
+            for row in range(0, self.rows):
+                if self.trees[row][col] > max_heights[row]:
+                    self.visibility[row][col] = True
+                    max_heights[row] = self.trees[row][col]
+        # and finally, right
+        max_heights = [-1 for x in range(0, self.rows)]
+        for col in reversed(range(0, self.columns)):
+            for row in range(0, self.rows):
+                if self.trees[row][col] > max_heights[row]:
+                    self.visibility[row][col] = True
+                    max_heights[row] = self.trees[row][col]
+
+        return sum([col.count(True) for col in self.visibility])
+
     
-    # def _collapse_forest_in_direction(self, cover: List[List[bool]]):
-    #     # start going down
+    def find_max_visibility(self) -> int:
+        # is there some way to look at the data so we only check some squares?
+        # i.e. if we are checking a tree and pass over other trees, we can
+        # eliminate them somehow? or maybe we can store that info so we don't
+        # have to scan back and forth every time.
+        return 0
         
