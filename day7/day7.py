@@ -1,16 +1,18 @@
-from filetree import FileTree
+from io import TextIOWrapper
+from advent_day import AdventDay
+from day7.filetree import FileTree
 
-def get_size(tree: FileTree) -> str:
-    return tree.get_sum_of_large_directories()
+class Day7(AdventDay):
+    TOTAL_SPACE = 70000000
+    FREE_SPACE = 30000000
 
-def part1(tree: FileTree) -> str:
-    return get_size(tree)
+    command_tree: FileTree
+    def __init__(self, input:TextIOWrapper):
+        self.command_tree= FileTree(input)
 
-def part2(tree: FileTree) -> str:
-    return tree.get_smallest_big_directory(70000000, 30000000)
-
-if __name__ == '__main__':
-    with open('day7\\input.txt', encoding='utf-8') as commands:
-        command_tree = FileTree(commands)
-        print(part1(command_tree))
-        print(part2(command_tree))
+    def part1(self) -> str:
+        return self.command_tree.get_sum_of_large_directories()
+    
+    def part2(self) -> str:
+        return self.command_tree.get_smallest_big_directory(self.TOTAL_SPACE, self.FREE_SPACE)
+        
