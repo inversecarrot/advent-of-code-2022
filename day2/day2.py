@@ -1,5 +1,6 @@
-""" Script for day 2 solution """
-
+from io import TextIOWrapper
+from advent_day import AdventDay
+        
 SHAPE_VALUE: dict[str, int] = {"X": 1, "Y":2, "Z": 3}
 
 def score_round(opp: str, input: str) -> int:
@@ -73,23 +74,25 @@ def score_resulted_round(opp: str, res: str) -> int:
         case _:
             return 0
         
-def sum_total_scores(filename: str) -> int:
-    score = 0
-    with open(filename, encoding="utf-8") as rounds:
-        for line in rounds:
+class  Day2(AdventDay):
+    rounds: TextIOWrapper
+    def __init__(self, input: TextIOWrapper):
+        super().__init__(input)
+        self.rounds = input
+    
+    def part1(self):
+        score = 0
+        self.rounds.seek(0,0)
+        for line in self.rounds:
             throws = [t for t in line.split() if not (t.isspace() or t == "\n")]
             score += score_round(throws[0], throws[1])
-    return score
-
-def sum_total_resulted_scores(filename: str) -> int:
-    score = 0
-    with open(filename, encoding="utf-8") as rounds:
-        for line in rounds:
+        return score
+    
+    def part2(self):
+        score = 0
+        self.rounds.seek(0,0)
+        for line in self.rounds:
             inputs = [t for t in line.split() if not (t.isspace() or t == "\n")]
             score += score_resulted_round(inputs[0], inputs[1])
-    return score
-
-
-if __name__ == '__main__':
-    print(sum_total_scores('day2\\input.txt'))
-    print(sum_total_resulted_scores('day2\\input.txt'))
+        return score
+        

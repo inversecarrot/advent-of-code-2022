@@ -8,6 +8,7 @@ class Day8(AdventDay):
     forest: Forest
 
     def __init__(self, input: TextIOWrapper):
+        super().__init__(input)
         self.forest = Forest(input)
 
     def part1(self) -> str:

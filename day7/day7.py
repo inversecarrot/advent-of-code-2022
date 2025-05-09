@@ -8,6 +8,7 @@ class Day7(AdventDay):
 
     command_tree: FileTree
     def __init__(self, input:TextIOWrapper):
+        super().__init__(input)
         self.command_tree= FileTree(input)
 
     def part1(self) -> str:

@@ -7,6 +7,7 @@ class Day6(AdventDay):
     datastream: TextIOWrapper
     
     def __init__(self, input: TextIOWrapper):
+        super().__init__(input)
         self.datastream = input
 
     def part1(self) -> str:
