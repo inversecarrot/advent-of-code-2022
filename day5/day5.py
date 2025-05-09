@@ -1,20 +1,31 @@
 """Script to calculate answers for day 5"""
-from stacks import SupplyStacks, Crate
+from io import TextIOWrapper
+from advent_day import AdventDay
+from day5.stacks import SupplyStacks, Crate
 
-def part2(filename: str) -> str:
-    """
-        Calculates the crates that end on top of each stack assuming each move
-        is done all at once
-    """
-    return part1(filename, True)
+class Day5(AdventDay):
+    lines: TextIOWrapper
+    def __init__(self, input: TextIOWrapper):
+        super().__init__(input)
+        self.lines = input
 
-def part1(filename: str, is_part_2: bool = False) -> str:
-    """
+    def part1(self) -> str:
+        """
         Calculates the crates that end on top of each stack assuming each move
         is done one by one
-    """
-    with open(filename, encoding="utf-8") as lines:
-        nextline = lines.readline()
+        """
+        return self.calculate_moves(False)
+    
+    def part2(self) -> str:
+        """
+        Calculates the crates that end on top of each stack assuming each move
+        is done all at once
+        """
+        return self.calculate_moves(True)
+
+    def calculate_moves(self, is_part_2: bool) -> str:
+        self.lines.seek(0,0)
+        nextline = self.lines.readline()
         crates = []
         col_count = 0
         set_col_count = False
@@ -31,19 +42,16 @@ def part1(filename: str, is_part_2: bool = False) -> str:
             if not set_col_count:
                 col_count = column_index
                 set_col_count = True
-            nextline = lines.readline()
+            nextline = self.lines.readline()
         crates.reverse()
         stacks = SupplyStacks(crates, col_count)
-        nextline = lines.readline()
+        nextline = self.lines.readline()
         while(nextline != ''):
             command = nextline.strip("\n").split(" ")
             if (is_part_2):
                 stacks.process_command_single_move(int(command[1]), int(command[3]), int(command[5]))
             else:
                 stacks.process_command_multiple_moves(int(command[1]), int(command[3]), int(command[5]))
-            nextline = lines.readline()
+            nextline = self.lines.readline()
         return stacks.get_top_crates()
-
-if __name__ == '__main__':
-    print(part1('day5\\input.txt'))
-    print(part2('day5\\input.txt'))
+        

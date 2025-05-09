@@ -69,5 +69,36 @@ class Forest:
         # i.e. if we are checking a tree and pass over other trees, we can
         # eliminate them somehow? or maybe we can store that info so we don't
         # have to scan back and forth every time.
-        return 0
+        max_visibility = 0
+        for row in range(0, self.rows):
+            for col in range(0, self.columns):
+                visibility = self._get_visibility_score(row, col)
+                if visibility > max_visibility:
+                    max_visibility = visibility
+        return max_visibility
         
+    def _get_visibility_score(self, row: int, col: int) -> int:
+        height = self.trees[row][col]
+        if row == 0 or col == 0 or row == self.rows - 1 or col == self.columns - 1:
+            return 0
+        up, down, left, right = (0,0,0,0)
+        # start down
+        for cur_row in range(row + 1, self.rows):
+            down += 1
+            if self.trees[cur_row][col] >= height:
+                break
+        for cur_row in reversed(range(0, row)):
+            up += 1
+            if self.trees[cur_row][col] >= height:
+                break
+        # then left
+        for cur_col in range(col + 1, self.columns):
+            left +=1
+            if self.trees[row][cur_col] >= height:
+                break
+        # then right
+        for cur_col in reversed(range(0, col)):
+            right += 1
+            if self.trees[row][cur_col] >= height:
+                break
+        return up * down * left * right
