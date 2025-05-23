@@ -1,7 +1,10 @@
 from io import TextIOWrapper
+import logging
 from typing import List
 from advent_day import AdventDay
 from day10.circuit import Circuit, Instruction, InstructionType
+
+log = logging.getLogger(__name__)
 
 
 class Day10(AdventDay):
@@ -22,8 +25,17 @@ class Day10(AdventDay):
 
     def part1(self):
         circuit = Circuit()
-        # strengths = circuit.process_and_record_strengths(20, 40)
-        return ""
+        limit = 20
+        interval = 40
+        strength_sum = 0
+        idx = 0
+        while idx < len(self.instructions) and circuit.cycle < limit:
+            circuit.finishStoredInstruction()
+            idx += circuit.executeInstructionsUntilCycle(self.instructions[idx:], limit)
+            if circuit.cycle == limit:
+                strength_sum += circuit.getSignalStrength()
+            limit += interval
+        return str(strength_sum)
 
     def part2(self):
         return ""

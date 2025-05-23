@@ -12,7 +12,7 @@ class Day10TestCase(AdventDayUnitTestCase):
 
     def setUp(self):
         super().setUp(self.INPUT_FILE)
-        # logging.basicConfig(level = logging.DEBUG)
+        logging.basicConfig(level = logging.DEBUG)
         self.day = Day10(self.input)
 
     # Check if we are making instructions correctly
@@ -23,3 +23,6 @@ class Day10TestCase(AdventDayUnitTestCase):
         self.assertEqual(self.day.instructions[1].type, InstructionType.ADDX)
         self.assertEqual(self.day.instructions[1].value, -11)
         self.assertEqual(self.day.instructions[len(self.day.instructions) - 1].type, InstructionType.NOOP)
+
+    def test_part_1(self):
+        self.assertEqual(self.day.part1(), "13140", "Part 1 test answer is incorrect")

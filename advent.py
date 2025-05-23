@@ -9,6 +9,7 @@ import day6.day6 as day6
 import day7.day7 as day7
 import day8.day8 as day8
 import day9.day9 as day9
+import day10.day10 as day10
 
 
 if __name__ == '__main__':
@@ -43,6 +44,8 @@ if __name__ == '__main__':
                 day = day8.Day8(input)
             case 9:
                 day = day9.Day9(input)
+            case 10:
+                day = day10.Day10(input)
             case _: 
                 pass
         print(day.part1())
