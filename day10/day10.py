@@ -29,7 +29,7 @@ class Day10(AdventDay):
         interval = 40
         strength_sum = 0
         idx = 0
-        while idx < len(self.instructions) and circuit.cycle < limit:
+        while idx < len(self.instructions):
             circuit.finishStoredInstruction()
             idx += circuit.executeInstructionsUntilCycle(self.instructions[idx:], limit)
             if circuit.cycle == limit:
@@ -38,4 +38,26 @@ class Day10(AdventDay):
         return str(strength_sum)
 
     def part2(self):
-        return ""
+        circuit = Circuit()
+        values = []
+        idx = 0
+        cycle = 0
+        while idx < len(self.instructions):
+            cycles_passed = circuit.executeInstruction(self.instructions[idx])
+            values += [circuit.getX()] * cycles_passed
+            cycle += cycles_passed
+            idx += 1
+        idx = 0
+        pixels = [["." for _ in range(0, 40)] for _ in range(0,6)]
+        while idx < len(values):
+            # if idx == 0:
+            #     log.debug(f"parameters at {idx} are value {values[idx]}, lower bound {(idx - 1) % 40}, upper bound {}")
+            if values[idx] >= (idx % 40) - 1 and values[idx] <= (idx % 40) + 1:
+                pixels[idx // 40][idx % 40] = '#'
+            idx += 1
+        res = "\n"
+        for row in pixels:
+            for pixel in row:
+                res += pixel
+            res += "\n"
+        return res

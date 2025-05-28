@@ -28,15 +28,17 @@ class Circuit:
         self.instruction_in_progress = None
         self.last_finished_instruction = None
 
-    def executeInstruction(self, instruction: Instruction):
+    def executeInstruction(self, instruction: Instruction) -> int:
         match instruction.type:
             case InstructionType.NOOP:
                 self.cycle += self.CYCLE_VALUES[instruction.type]
                 self.last_finished_instruction = (instruction, self.cycle)
+                return self.CYCLE_VALUES[instruction.type]
             case InstructionType.ADDX:
                 self.X += instruction.value
                 self.cycle += self.CYCLE_VALUES[instruction.type]
                 self.last_finished_instruction = (instruction, self.cycle)
+                return self.CYCLE_VALUES[instruction.type]
 
     def finishStoredInstruction(self):
         if self.instruction_in_progress is not None:
@@ -46,11 +48,13 @@ class Circuit:
         
 
     def getSignalStrength(self) -> int:
+        return self.getX() * self.cycle
+    
+    def getX(self) -> int:
         val = self.X
         if self.last_finished_instruction is not None and self.last_finished_instruction[1] == self.cycle and self.last_finished_instruction[0].type == InstructionType.ADDX:
             val -= self.last_finished_instruction[0].value
-        log.debug(f"Strength during {self.cycle} is {self.cycle * val} (X is {self.X})")
-        return val * self.cycle
+        return val
     
     # Executes instructions until cycle would exceed limit
     # returns number of instructions executed including partial ones

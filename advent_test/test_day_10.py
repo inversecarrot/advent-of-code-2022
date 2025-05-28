@@ -26,3 +26,17 @@ class Day10TestCase(AdventDayUnitTestCase):
 
     def test_part_1(self):
         self.assertEqual(self.day.part1(), "13140", "Part 1 test answer is incorrect")
+
+    def test_part_2(self):
+        self.assertEqual(
+            self.day.part2(),
+"""
+##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....
+""",
+            "Part 2 test answer is incorrect"
+        )
