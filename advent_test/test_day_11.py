@@ -16,7 +16,6 @@ class Day11TestCase(AdventDayUnitTestCase):
     
     @mock.patch.object(Monkey, '__new__')
     def test_parse_input(self, mockMonkey):
-        # mockMonkey.return_value = 
         day = Day11(self.input)
         self.assertEqual(len(day.monkeys), 4, "Incorrect number of monkeys")
         mockMonkey.assert_called_with(
@@ -30,4 +29,11 @@ class Day11TestCase(AdventDayUnitTestCase):
             "If false: throw to monkey 1"
             ])
         
-        pass
+    def test_part_1(self):
+        day = Day11(self.input)
+        self.assertEqual(day.part1(), "10605")
+
+    def test_part_2(self):
+        day = Day11(self.input)
+        self.assertEqual(day.part2(), "2713310158")
+                    
