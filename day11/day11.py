@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 class Day11(AdventDay):
 
     monkeys: List[Monkey]
+    monkeyModuloProduct: int
     input: TextIOWrapper
 
     def __init__(self, input: TextIOWrapper):
@@ -26,6 +27,11 @@ class Day11(AdventDay):
                 if len(monkey_state) == 6:
                     self.monkeys.append(Monkey(monkey_state))
                     monkey_state  = []
+
+        monkeyModuloProduct = 1
+        for monkey in self.monkeys:
+            monkeyModuloProduct = monkeyModuloProduct * monkey.test.divisor
+        self.monkeyModuloProduct = monkeyModuloProduct
 
     def resetMonkeys(self):
         self.input.seek(0,0)
@@ -45,11 +51,9 @@ class Day11(AdventDay):
         self.resetMonkeys()
         rounds = 10000
         for r in range(0, rounds):
-            log.debug(f"Round {r}")
             for monkey in self.monkeys:
-                log.debug(f"Monkey {monkey.name} turn")
-                # Can't keep track of items with actual values, either need a math library or fancy code
-                monkey.takeTurn(self.monkeys, False)
+                # Can't keep track of items with actual values so we can use product mod the product of all divisors
+                monkey.takeTurn(self.monkeys, False, self.monkeyModuloProduct)
         activities = [m.activity for m in self.monkeys]
         activities.sort(reverse=True)
         return str(activities[0] * activities[1])

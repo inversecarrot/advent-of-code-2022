@@ -56,41 +56,35 @@ class Monkey:
             false_target=int(initial_state[5].removeprefix("If false: throw to monkey "))
         )
 
-    def takeTurn(self, monkeys: List[Self], worryDecrease = True):
-        # log.debug(f"Monkey {self.name}:")
+    def takeTurn(self, monkeys: List[Self], worryDecrease = True, moduloProduct = -1):
         for item in self.items:
-            # log.debug(f"\tMonkey inspects item with worry level {item}")
-            item = self._inspectItem(item, worryDecrease)
+            item = self._inspectItem(item, worryDecrease, moduloProduct)
             self._throwItem(item, monkeys)
         self.items = []
         pass
 
-    def _inspectItem(self, item: int, worryDecrease: bool) -> int:
+    def _inspectItem(self, item: int, worryDecrease: bool, moduloProduct = -1) -> int:
         self.activity += 1
         match self.operation.type:
             case MonkeyOperationType.ADD:
                 item += self.operation.value
-                # log.debug(f"\t\tWorry level increases by {self.operation.value} to {item}")
             case MonkeyOperationType.MULT:
                 item *= self.operation.value
-                # log.debug(f"\t\tWorry level is multiplied by {self.operation.value} to {item}")
             case MonkeyOperationType.SQUARE:
-                # log.debug(f"\t\tWorry level is raised to power of {self.operation.value} to {item}")
                 item = item * item
         if worryDecrease:
-            # log.debug(f"\t\tMonkey gets bored, worry level decreases to {item // 3}")
             item = item // 3
+        if moduloProduct != -1:
+            # prevent worry values from becoming huge but still preserve all tests
+            item = item % moduloProduct
         return item
     
     def _throwItem(self, item: int, monkeys: List[Self]):
         target: int
         if item % self.test.divisor == 0:
-            # log.debug(f"\t\tItem is divisible by {self.test.divisor}")
             target = self.test.true_target
         else:
-            # log.debug(f"\t\tItem is not divisible by {self.test.divisor}")
             target = self.test.false_target
-        # log.debug(f"\t\tItem with worry {item} is thrown to monkey {target}")
         monkeys[target].items.append(item)
         pass
 
