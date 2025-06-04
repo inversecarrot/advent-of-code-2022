@@ -2,6 +2,7 @@
 import argparse
 import day1.day1 as day1
 from day11 import day11
+from day12 import day12
 import day2.day2 as day2
 import day3.day3 as day3
 import day4.day4 as day4
@@ -49,6 +50,8 @@ if __name__ == '__main__':
                 day = day10.Day10(input)
             case 11:
                 day = day11.Day11(input)
+            case 12:
+                day = day12.Day12(input)
             case _: 
                 pass
         print(day.part1())
