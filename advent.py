@@ -4,6 +4,7 @@ import day1.day1 as day1
 from day11 import day11
 from day12 import day12
 from day13 import day13
+from day14 import day14
 import day2.day2 as day2
 import day3.day3 as day3
 import day4.day4 as day4
@@ -55,6 +56,8 @@ if __name__ == '__main__':
                 day = day12.Day12(input)
             case 13:
                 day = day13.Day13(input)
+            case 14:
+                day = day14.Day14(input)
             case _: 
                 pass
         print(day.part1())
