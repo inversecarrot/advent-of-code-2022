@@ -38,7 +38,10 @@ class Cave:
     # Returns boolean indicating whether sand successfully came to rest
     def spawnSand(self) -> bool:
         (sand_x, sand_y) = self.sand_origin
-
+        # if there is nowhere for the sand to flow, we stop
+        if self.grid.get(sand_x,sand_y) == "o":
+            return False
+        
         while True:
             next_y = sand_y + 1
             if next_y > self.max_y:
@@ -65,4 +68,16 @@ class Cave:
             
             # At this point, none of the squares we can flow to are open, so we come to rest
             self.grid.set(sand_x, sand_y, "o")
-            return True         
+            return True
+
+    def getCaveStr(self):
+        cave = "\n"
+        for y in range (0, self.max_y + 1):
+            line = ""
+            for x in range(self.min_x, self.max_x + 1):
+                line += self.grid.get(x,y)
+            line += "\n"
+            cave += line
+        return cave
+            
+

@@ -37,4 +37,5 @@ class Day14TestCase(AdventDayUnitTestCase):
         self.assertEqual(day.part1(), "24", "Incorrect part 1 test answer")
 
     def test_part_2(self):
-        pass
+        day = Day14(self.input)
+        self.assertEqual(day.part2(), "93", "Incorrect part 2 answer")

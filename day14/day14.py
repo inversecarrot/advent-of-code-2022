@@ -38,7 +38,7 @@ class Day14(AdventDay):
                     points.append((x, y))
                 lines.append(points)
         self.lines = lines
-
+      
     def part1(self):
         cave = Cave(self.min_x, self.max_x, self.max_y, self.lines)
         count = 0
@@ -47,4 +47,10 @@ class Day14(AdventDay):
         return str(count)
 
     def part2(self):
-        return ""
+        newmax = self.max_y + 2
+        newlines = self.lines + [[(0, newmax), (1000, newmax)]]
+        cave = Cave(0, 1000, newmax, newlines)
+        count = 0
+        while cave.spawnSand() == True:
+            count += 1
+        return str(count)
