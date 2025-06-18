@@ -24,4 +24,6 @@ class Day16TestCase(AdventDayUnitTestCase):
         pass
 
     def test_part_2(self):
+        day = Day16(self.input)
+        self.assertEqual(day.part2(), "1707")
         pass

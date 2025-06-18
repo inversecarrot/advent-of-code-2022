@@ -15,11 +15,10 @@ class ValveNode:
 
 # a path is a list of edges in order with the path's total value at each step
 # along with the open valves
-# do valves need to have timestamps?
 @dataclass
 class TunnelPath:
     cur: str
-    path: List[str]
     open_valves: Set[str]
     value: int
     time: int
+    ele_cur: str = None
