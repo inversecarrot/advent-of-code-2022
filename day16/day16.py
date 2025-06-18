@@ -27,9 +27,12 @@ class Day16(AdventDay):
             self.valves.append(Valve(name, flow_rate, neighbors))
 
     def _should_trim_path(self, path: TunnelPath, node: ValveNode) -> bool:
-        if (path.time, frozenset(path.open_valves)) not in node.best_paths.keys():
+        if frozenset(path.open_valves) not in node.best_paths.keys():
+            for vs in node.best_paths.keys():
+                if vs.issuperset(path.open_valves):
+                    return True
             return False
-        elif path.value > node.best_paths[(path.time, frozenset(path.open_valves))]:
+        elif path.value > node.best_paths[frozenset(path.open_valves)]:
             return False
         return True
 
@@ -46,17 +49,17 @@ class Day16(AdventDay):
                 0,
                 0
             )
+
         while next_path != None and next_path.time < max_time:
-            node = valve_nodes[next_path.cur]
             if not self._should_trim_path(next_path, node):
                 # update the highest value seen for this time
 
-                node.best_paths[(next_path.time, frozenset(next_path.open_valves))] = next_path.value
+                node.best_paths[frozenset(next_path.open_valves)] = next_path.value
                 node.max = max(node.max, next_path.value)
 
                 # get all next possible moves
                 moves = node.valve.neighbors.copy()
-                if next_path.cur not in next_path.open_valves:
+                if next_path.cur not in next_path.open_valves and node.valve.flow_rate > 0:
                     moves.append("O")
                 
                 # make new paths

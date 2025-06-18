@@ -10,7 +10,7 @@ class Valve:
 @dataclass
 class ValveNode:
     valve: Valve
-    best_paths: Dict[Tuple[int, Set[str]], int]
+    best_paths: Dict[Set[str], int]
     max: int
 
 # a path is a list of edges in order with the path's total value at each step
