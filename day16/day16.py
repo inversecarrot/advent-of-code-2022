@@ -3,7 +3,7 @@ from io import TextIOWrapper
 import logging
 from typing import Dict, List
 from advent_day import AdventDay
-from day16.tunnel_path import TunnelPath, Valve, ValveNode
+from day16.tunnel_path import EleValveNode, TunnelPath, Valve, ValveNode
 
 log = logging.getLogger(__name__)
 
@@ -28,11 +28,19 @@ class Day16(AdventDay):
 
     def _should_trim_path(self, path: TunnelPath, node: ValveNode) -> bool:
         if frozenset(path.open_valves) not in node.best_paths.keys():
-            for vs in node.best_paths.keys():
-                if vs.issuperset(path.open_valves):
-                    return True
             return False
         elif path.value > node.best_paths[frozenset(path.open_valves)]:
+            return False
+        return True
+    
+    # need to figure out a way to trim exponentially growing paths
+    def _should_trim_ele_path(self, path: TunnelPath, node: ValveNode, ele_node: ValveNode) -> bool:
+        if (frozenset(path.open_valves), frozenset(path.ele_open_valves)) not in node.best_paths.keys():
+            return False
+        elif (frozenset(path.open_valves), frozenset(path.ele_open_valves)) not in ele_node.best_paths.keys():
+            return False
+        elif (path.value >= node.best_paths[(frozenset(path.open_valves), frozenset(path.ele_open_valves))] or
+            path.value >= ele_node.best_paths[(frozenset(path.open_valves), frozenset(path.ele_open_valves))]):
             return False
         return True
 
@@ -49,8 +57,12 @@ class Day16(AdventDay):
                 time=0
             )
 
+        t = -1
         while next_path != None and next_path.time < max_time:
             node = valve_nodes[next_path.cur]
+            if next_path.time > t:
+                print(next_path.time)
+                t = next_path.time
             if not self._should_trim_path(next_path, node):
                 # update the highest value seen for this time
 
@@ -88,10 +100,10 @@ class Day16(AdventDay):
         return str(max_val)
 
     def part2(self):
-        max_time = 30
-        valve_nodes: Dict[str, ValveNode] = {}
+        max_time = 26
+        valve_nodes: Dict[str, EleValveNode] = {}
         for valve in self.valves:
-            valve_nodes[valve.name] = ValveNode(valve, {}, -1)
+            valve_nodes[valve.name] = EleValveNode(valve, {}, -1)
         paths = deque([])
         next_path = TunnelPath(
                 cur="AA",
@@ -99,40 +111,50 @@ class Day16(AdventDay):
                 open_valves=set([]),
                 value=0,
                 time=0,
+                ele_open_valves=set([])
             )
+        t=-1
         while next_path != None and next_path.time < max_time:
+            if next_path.time > t:
+                print(next_path.time)
+                t = next_path.time
             node = valve_nodes[next_path.cur]
             ele_node = valve_nodes[next_path.ele_cur]
-            if (not self._should_trim_path(next_path, node)) or (not self._should_trim_path(next_path, ele_node)):
+            # I think there's an edge case here where it matters if the elephant or you open the valve, we trim too much
+            if not self._should_trim_ele_path(next_path, node, ele_node):
                 # update the highest value seen for this time
                 cur_best = -1
-                if frozenset(next_path.open_valves) in node.best_paths.keys():
-                    cur_best = node.best_paths[frozenset(next_path.open_valves)]
-                node.best_paths[frozenset(next_path.open_valves)] = max(cur_best, next_path.value)
+                if (frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves)) in node.best_paths.keys():
+                    cur_best = node.best_paths[(frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves))]
+                node.best_paths[(frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves))] = max(cur_best, next_path.value)
                 node.max = max(node.max, next_path.value)
 
                 ele_best = -1
-                if frozenset(next_path.open_valves) in ele_node.best_paths.keys():
-                    ele_best = ele_node.best_paths[frozenset(next_path.open_valves)]
-                ele_node.best_paths[frozenset(next_path.open_valves)] = max(ele_best, next_path.value)
+                if (frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves)) in ele_node.best_paths.keys():
+                    ele_best = ele_node.best_paths[(frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves))]
+                ele_node.best_paths[(frozenset(next_path.open_valves), frozenset(next_path.ele_open_valves))] = max(ele_best, next_path.value)
                 ele_node.max = max(ele_node.max, next_path.value)
 
                 # get all next possible moves
                 moves = node.valve.neighbors.copy()
                 ele_moves = ele_node.valve.neighbors.copy()
-                if next_path.cur not in next_path.open_valves and node.valve.flow_rate > 0:
+                if next_path.cur not in next_path.open_valves and next_path.cur not in next_path.ele_open_valves and node.valve.flow_rate > 0:
                     moves.append("O")
                 
-                if next_path.ele_cur not in next_path.open_valves and ele_node.valve.flow_rate > 0:
+                if next_path.ele_cur not in next_path.open_valves and next_path.ele_cur not in next_path.ele_open_valves and ele_node.valve.flow_rate > 0:
                     ele_moves.append("O")
                 
                 # make new paths
                 for move in moves:
                     for ele_move in ele_moves:
+                        if move == ele_move == "O":
+                            if next_path.cur == next_path.ele_cur:
+                                continue
                         new_path = TunnelPath(
                                 cur=move,
                                 ele_cur=ele_move,
                                 open_valves=next_path.open_valves.copy(),
+                                ele_open_valves=next_path.ele_open_valves.copy(),
                                 value=next_path.value,
                                 time=next_path.time + 1
                             )
@@ -144,7 +166,7 @@ class Day16(AdventDay):
 
                         if ele_move == "O":
                             new_path.ele_cur = next_path.ele_cur
-                            new_path.open_valves.add(next_path.ele_cur)
+                            new_path.ele_open_valves.add(next_path.ele_cur)
                             new_path.value += (max_time - new_path.time) * ele_node.valve.flow_rate
 
                     paths.append(new_path)
